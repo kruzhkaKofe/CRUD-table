@@ -58,7 +58,7 @@
             <v-toolbar-title>Список сотрудников</v-toolbar-title>
             <v-spacer></v-spacer>
             <add-person-dialog v-model="dialog" :editedIndex="editedIndex">
-              <v-form v-model="valid" lazy-validation>
+              <v-form v-model="valid" ref="form" lazy-validation>
                 <v-card-text>
                   <v-container>
                     <v-row>
@@ -169,7 +169,7 @@
                     :disabled="!valid"
                     color="success"
                     class="mr-4"
-                    @click="save"
+                    @click="validate"
                   >
                     Отправить
                   </v-btn>
@@ -401,11 +401,25 @@ export default {
       this.closeDelete();
     },
 
+    validate() {
+      if (this.$refs.form.validate()) {
+        this.save();
+        this.$nextTick(() => {
+          this.reset();
+        });
+      }
+    },
+
+    reset() {
+      this.$refs.form.reset();
+    },
+
     close() {
       this.dialog = false;
       this.$nextTick(() => {
         this.editedPerson = this.defaultPerson;
         this.editedIndex = -1;
+        this.reset();
       });
     },
 
