@@ -196,11 +196,26 @@
                 </v-form>
               </v-card>
             </v-dialog>
-            <dialog-delete
-              v-model="dialogDelete"
-              @closeDelete="closeDelete"
-              @deletePersonConfirm="deletePersonConfirm"
-            />
+            <v-dialog v-model="dialogDelete" max-width="500px">
+              <v-card>
+                <v-card-title class="text-h6 justify-center"
+                  >Уверены, что хотите удалить?</v-card-title
+                >
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="green darken-2" text @click="closeDelete"
+                    >Отмена</v-btn
+                  >
+                  <v-btn
+                    color="green darken-2"
+                    text
+                    @click="deletePersonConfirm"
+                    >Подтвердить</v-btn
+                  >
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
@@ -217,11 +232,10 @@
 </template>
 
 <script>
-import DialogDelete from "@/components/DialogDelete";
 import ProfileButtons from "@/components/ProfileButtons";
 
 export default {
-  components: { DialogDelete, ProfileButtons },
+  components: { ProfileButtons },
 
   data: () => ({
     persons: [
@@ -405,13 +419,15 @@ export default {
 
     editPerson(person) {
       this.editedIndex = this.persons.indexOf(person);
-      this.editedPerson = Object.assign({}, person);
-      this.dialog = true;
+      this.editedPerson = person;
+      this.$nextTick(() => {
+        this.dialog = true;
+      });
     },
 
     deletePerson(person) {
       this.editedIndex = this.persons.indexOf(person);
-      this.editedPerson = Object.assign({}, person);
+      this.editedPerson = person;
       this.dialogDelete = true;
     },
 
@@ -423,7 +439,7 @@ export default {
     close() {
       this.dialog = false;
       this.$nextTick(() => {
-        this.editedPerson = Object.assign({}, this.defaultPerson);
+        this.editedPerson = this.defaultPerson;
         this.editedIndex = -1;
       });
     },
@@ -431,7 +447,7 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
       this.$nextTick(() => {
-        this.editedPerson = Object.assign({}, this.defaultPerson);
+        this.editedPerson = this.defaultPerson;
         this.editedIndex = -1;
       });
     },
