@@ -57,165 +57,134 @@
           <v-toolbar flat>
             <v-toolbar-title>Список сотрудников</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="600px">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn
-                  color="green darken-2"
-                  dark
-                  class="mb-2"
-                  v-bind="attrs"
-                  v-on="on"
-                >
-                  Добавить сотрудника
-                </v-btn>
-              </template>
-              <v-card>
-                <v-card-title>
-                  <span class="text-h5">{{ formTitle }}</span>
-                </v-card-title>
-                <v-form v-model="valid" lazy-validation>
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedPerson.name"
-                            label="Имя*"
-                            :rules="[rules.required, rules.string]"
-                            required
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedPerson.surname"
-                            label="Фамилия*"
-                            :rules="[rules.required, rules.string]"
-                            required
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6" md="4">
-                          <v-text-field
-                            v-model="editedPerson.patronymic"
-                            label="Отчество*"
-                            :rules="[rules.required, rules.string]"
-                            required
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
-                          <v-text-field
-                            v-model="editedPerson.position"
-                            label="Должность*"
-                            :rules="[rules.required, rules.string]"
-                            required
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                          <v-text-field
-                            v-model="editedPerson.salary"
-                            label="Оклад (y.e.)*"
-                            suffix="у.е."
-                            :rules="[rules.required, rules.salary]"
-                            required
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                          <v-select
-                            v-model="editedPerson.employment_history"
-                            :items="['Да', 'Нет']"
-                            label="Трудовая книжка*"
-                            :rules="[rules.required]"
-                            required
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                          <v-select
-                            v-model="editedPerson.rate"
-                            :items="['Полная', 'Половина']"
-                            label="Ставка*"
-                            :rules="[rules.required]"
-                            required
-                          ></v-select>
-                        </v-col>
-                        <v-col cols="12" sm="6">
-                          <v-menu
-                            ref="menu"
-                            v-model="menu"
-                            :close-on-content-click="false"
-                            :return-value.sync="date"
-                            offset-y
-                            required
-                            min-width="auto"
-                          >
-                            <template v-slot:activator="{ on, attrs }">
-                              <v-text-field
-                                prepend-icon="mdi-calendar"
-                                v-model="editedPerson.start_date"
-                                label="Выберите дату"
-                                readonly
-                                v-bind="attrs"
-                                v-on="on"
-                              ></v-text-field>
-                            </template>
-                            <v-date-picker
+            <add-person-dialog v-model="dialog" :editedIndex="editedIndex">
+              <v-form v-model="valid" lazy-validation>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedPerson.name"
+                          label="Имя*"
+                          :rules="[rules.required, rules.string]"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedPerson.surname"
+                          label="Фамилия*"
+                          :rules="[rules.required, rules.string]"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6" md="4">
+                        <v-text-field
+                          v-model="editedPerson.patronymic"
+                          label="Отчество*"
+                          :rules="[rules.required, rules.string]"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-text-field
+                          v-model="editedPerson.position"
+                          label="Должность*"
+                          :rules="[rules.required, rules.string]"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6">
+                        <v-text-field
+                          v-model="editedPerson.salary"
+                          label="Оклад (y.e.)*"
+                          suffix="у.е."
+                          :rules="[rules.required, rules.salary]"
+                          required
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" sm="6">
+                        <v-select
+                          v-model="editedPerson.employment_history"
+                          :items="['Да', 'Нет']"
+                          label="Трудовая книжка*"
+                          :rules="[rules.required]"
+                          required
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6">
+                        <v-select
+                          v-model="editedPerson.rate"
+                          :items="['Полная', 'Половина']"
+                          label="Ставка*"
+                          :rules="[rules.required]"
+                          required
+                        ></v-select>
+                      </v-col>
+                      <v-col cols="12" sm="6">
+                        <v-menu
+                          ref="menu"
+                          v-model="menu"
+                          :close-on-content-click="false"
+                          :return-value.sync="date"
+                          offset-y
+                          required
+                          min-width="auto"
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-text-field
+                              prepend-icon="mdi-calendar"
                               v-model="editedPerson.start_date"
-                              no-title
-                              scrollable
+                              label="Выберите дату"
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                            ></v-text-field>
+                          </template>
+                          <v-date-picker
+                            v-model="editedPerson.start_date"
+                            no-title
+                            scrollable
+                          >
+                            <v-spacer></v-spacer>
+                            <v-btn text color="primary" @click="menu = false">
+                              Cancel
+                            </v-btn>
+                            <v-btn
+                              text
+                              color="primary"
+                              @click="$refs.menu.save(date)"
                             >
-                              <v-spacer></v-spacer>
-                              <v-btn text color="primary" @click="menu = false">
-                                Cancel
-                              </v-btn>
-                              <v-btn
-                                text
-                                color="primary"
-                                @click="$refs.menu.save(date)"
-                              >
-                                OK
-                              </v-btn>
-                            </v-date-picker>
-                          </v-menu>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      :disabled="!valid"
-                      color="success"
-                      class="mr-4"
-                      @click="save"
-                    >
-                      Отправить
-                    </v-btn>
-
-                    <v-btn color="error" class="mr-4" @click="close">
-                      Отмена
-                    </v-btn>
-                  </v-card-actions>
-                </v-form>
-              </v-card>
-            </v-dialog>
-            <v-dialog v-model="dialogDelete" max-width="500px">
-              <v-card>
-                <v-card-title class="text-h6 justify-center"
-                  >Уверены, что хотите удалить?</v-card-title
-                >
+                              OK
+                            </v-btn>
+                          </v-date-picker>
+                        </v-menu>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="green darken-2" text @click="closeDelete"
-                    >Отмена</v-btn
-                  >
                   <v-btn
-                    color="green darken-2"
-                    text
-                    @click="deletePersonConfirm"
-                    >Подтвердить</v-btn
+                    :disabled="!valid"
+                    color="success"
+                    class="mr-4"
+                    @click="save"
                   >
-                  <v-spacer></v-spacer>
+                    Отправить
+                  </v-btn>
+
+                  <v-btn color="error" class="mr-4" @click="close">
+                    Отмена
+                  </v-btn>
                 </v-card-actions>
-              </v-card>
-            </v-dialog>
+              </v-form>
+            </add-person-dialog>
+            <delete-dialog
+              v-model="dialogDelete"
+              @deletePersonConfirm="deletePersonConfirm"
+              @closeDelete="closeDelete"
+            />
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
@@ -233,9 +202,11 @@
 
 <script>
 import ProfileButtons from "@/components/ProfileButtons";
+import DeleteDialog from "@/components/DeleteDialog";
+import AddPersonDialog from "@/components/AddPersonDialog";
 
 export default {
-  components: { ProfileButtons },
+  components: { ProfileButtons, DeleteDialog, AddPersonDialog },
 
   data: () => ({
     persons: [
@@ -405,12 +376,6 @@ export default {
       .substr(0, 10),
     menu: false,
   }),
-
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? "Новый профиль" : "Изменить профиль";
-    },
-  },
 
   methods: {
     openDetails(person) {
