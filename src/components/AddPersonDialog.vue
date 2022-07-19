@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="showDialog" max-width="600px">
+  <v-dialog :value="value" @input="updateValue" max-width="600px">
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="green darken-2" dark class="mb-2" v-bind="attrs" v-on="on">
         Добавить сотрудника
@@ -24,17 +24,14 @@ export default {
   },
 
   computed: {
-    showDialog: {
-      get() {
-        return this.value;
-      },
-      set(value) {
-        this.$emit("input", value);
-      },
-    },
-
     formTitle() {
       return this.editedIndex === -1 ? "Новый профиль" : "Изменить профиль";
+    },
+  },
+
+  methods: {
+    updateValue(value) {
+      this.$emit("input", value);
     },
   },
 };
