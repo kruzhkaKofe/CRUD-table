@@ -31,7 +31,7 @@
 
 <script>
 export default {
-  name: "ProfileButtons",
+  name: "PersonButtons",
 
   emits: ["deletePerson", "editPerson", "openDetails"],
 
