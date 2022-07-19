@@ -58,127 +58,11 @@
             <v-toolbar-title>Список сотрудников</v-toolbar-title>
             <v-spacer></v-spacer>
             <add-person-dialog v-model="dialog" :editedIndex="editedIndex">
-              <v-form v-model="valid" ref="form" lazy-validation>
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedPerson.name"
-                          label="Имя*"
-                          :rules="[rules.required, rules.string]"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedPerson.surname"
-                          label="Фамилия*"
-                          :rules="[rules.required, rules.string]"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6" md="4">
-                        <v-text-field
-                          v-model="editedPerson.patronymic"
-                          label="Отчество*"
-                          :rules="[rules.required, rules.string]"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="editedPerson.position"
-                          label="Должность*"
-                          :rules="[rules.required, rules.string]"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-text-field
-                          v-model="editedPerson.salary"
-                          label="Оклад (y.e.)*"
-                          suffix="у.е."
-                          :rules="[rules.required, rules.salary]"
-                          required
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-select
-                          v-model="editedPerson.employment_history"
-                          :items="['Да', 'Нет']"
-                          label="Трудовая книжка*"
-                          :rules="[rules.required]"
-                          required
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-select
-                          v-model="editedPerson.rate"
-                          :items="['Полная', 'Половина']"
-                          label="Ставка*"
-                          :rules="[rules.required]"
-                          required
-                        ></v-select>
-                      </v-col>
-                      <v-col cols="12" sm="6">
-                        <v-menu
-                          ref="menu"
-                          v-model="menu"
-                          :close-on-content-click="false"
-                          :return-value.sync="date"
-                          offset-y
-                          required
-                          min-width="auto"
-                        >
-                          <template v-slot:activator="{ on, attrs }">
-                            <v-text-field
-                              prepend-icon="mdi-calendar"
-                              v-model="editedPerson.start_date"
-                              label="Выберите дату"
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                            ></v-text-field>
-                          </template>
-                          <v-date-picker
-                            v-model="editedPerson.start_date"
-                            no-title
-                            scrollable
-                          >
-                            <v-spacer></v-spacer>
-                            <v-btn text color="primary" @click="menu = false">
-                              Cancel
-                            </v-btn>
-                            <v-btn
-                              text
-                              color="primary"
-                              @click="$refs.menu.save(date)"
-                            >
-                              OK
-                            </v-btn>
-                          </v-date-picker>
-                        </v-menu>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn
-                    :disabled="!valid"
-                    color="success"
-                    class="mr-4"
-                    @click="validate"
-                  >
-                    Отправить
-                  </v-btn>
-
-                  <v-btn color="error" class="mr-4" @click="close">
-                    Отмена
-                  </v-btn>
-                </v-card-actions>
-              </v-form>
+              <add-person-form
+                v-model="editedPerson"
+                @close="close"
+                @save="save"
+              />
             </add-person-dialog>
             <delete-dialog
               v-model="dialogDelete"
@@ -188,7 +72,7 @@
           </v-toolbar>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
-          <profile-buttons
+          <person-buttons
             :item="item"
             @deletePerson="deletePerson"
             @editPerson="editPerson"
@@ -201,12 +85,13 @@
 </template>
 
 <script>
-import ProfileButtons from "@/components/ProfileButtons";
+import PersonButtons from "@/components/PersonButtons";
 import DeleteDialog from "@/components/DeleteDialog";
 import AddPersonDialog from "@/components/AddPersonDialog";
+import AddPersonForm from "@/components/AddPersonForm";
 
 export default {
-  components: { ProfileButtons, DeleteDialog, AddPersonDialog },
+  components: { PersonButtons, DeleteDialog, AddPersonDialog, AddPersonForm },
 
   data: () => ({
     persons: [
@@ -359,22 +244,6 @@ export default {
       start_date: "",
       rate: "",
     },
-    rules: {
-      required: (value) => !!value || "Обязательно.",
-      string: (value) => {
-        const pattern = /^[А-ЯЁ][а-яё]+$/;
-        return pattern.test(value) || "Введите с большой буквы.";
-      },
-      salary: (value) => {
-        const pattern = /^\s*\d+?\d+\s*$/;
-        return pattern.test(value) || "Введите цифры.";
-      },
-    },
-    valid: true,
-    date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .substr(0, 10),
-    menu: false,
   }),
 
   methods: {
@@ -384,15 +253,13 @@ export default {
 
     editPerson(person) {
       this.editedIndex = this.persons.indexOf(person);
-      this.editedPerson = person;
-      this.$nextTick(() => {
-        this.dialog = true;
-      });
+      this.editedPerson = Object.assign({}, person);
+      this.dialog = true;
     },
 
     deletePerson(person) {
       this.editedIndex = this.persons.indexOf(person);
-      this.editedPerson = person;
+      this.editedPerson = Object.assign({}, person);
       this.dialogDelete = true;
     },
 
@@ -401,32 +268,18 @@ export default {
       this.closeDelete();
     },
 
-    validate() {
-      if (this.$refs.form.validate()) {
-        this.save();
-        this.$nextTick(() => {
-          this.reset();
-        });
-      }
-    },
-
-    reset() {
-      this.$refs.form.reset();
-    },
-
     close() {
       this.dialog = false;
       this.$nextTick(() => {
-        this.editedPerson = this.defaultPerson;
+        this.editedPerson = Object.assign({}, this.defaultPerson);
         this.editedIndex = -1;
-        this.reset();
       });
     },
 
     closeDelete() {
       this.dialogDelete = false;
       this.$nextTick(() => {
-        this.editedPerson = this.defaultPerson;
+        this.editedPerson = Object.assign({}, this.defaultPerson);
         this.editedIndex = -1;
       });
     },
