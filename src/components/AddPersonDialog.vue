@@ -9,29 +9,46 @@
       <v-card-title>
         <span class="text-h5">{{ formTitle }}</span>
       </v-card-title>
-      <slot></slot>
+      <add-person-form v-model="needEditedPerson" @close="close" @save="save" />
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import AddPersonForm from "@/components/AddPersonForm";
+
 export default {
+  components: { AddPersonForm },
+
   name: "AddPersonDialog",
 
   props: {
     value: Boolean,
     editedIndex: Number,
+    editedPerson: Object,
   },
 
   computed: {
     formTitle() {
       return this.editedIndex === -1 ? "Новый профиль" : "Изменить профиль";
     },
+
+    needEditedPerson() {
+      return this.editedPerson;
+    },
   },
 
   methods: {
     updateValue(value) {
       this.$emit("input", value);
+    },
+
+    save() {
+      this.$emit("save");
+    },
+
+    close() {
+      this.$emit("close");
     },
   },
 };

@@ -57,12 +57,13 @@
           <v-toolbar flat>
             <v-toolbar-title>Список сотрудников</v-toolbar-title>
             <v-spacer></v-spacer>
-            <add-person-dialog v-model="dialog" :editedIndex="editedIndex">
-              <add-person-form
-                v-model="editedPerson"
-                @close="close"
-                @save="save"
-              />
+            <add-person-dialog
+              v-model="dialog"
+              :editedIndex="editedIndex"
+              :editedPerson="editedPerson"
+              @close="close"
+              @save="save"
+            >
             </add-person-dialog>
             <delete-dialog
               v-model="dialogDelete"
@@ -88,10 +89,9 @@
 import PersonButtons from "@/components/PersonButtons";
 import DeleteDialog from "@/components/DeleteDialog";
 import AddPersonDialog from "@/components/AddPersonDialog";
-import AddPersonForm from "@/components/AddPersonForm";
 
 export default {
-  components: { PersonButtons, DeleteDialog, AddPersonDialog, AddPersonForm },
+  components: { PersonButtons, DeleteDialog, AddPersonDialog },
 
   data: () => ({
     persons: [
