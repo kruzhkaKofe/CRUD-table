@@ -149,8 +149,7 @@ export default {
     validate() {
       if (this.$refs.form.validate()) {
         this.save();
-      } else {
-        return;
+        this.$refs.form.resetValidation();
       }
     },
 
@@ -164,9 +163,7 @@ export default {
 
     close() {
       this.$emit("close");
-      this.$nextTick(() => {
-        this.reset();
-      });
+      this.reset();
     },
   },
 

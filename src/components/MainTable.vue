@@ -32,6 +32,7 @@
             <v-toolbar-title>Список сотрудников</v-toolbar-title>
             <v-spacer></v-spacer>
             <add-person-dialog
+              ref="personDialog"
               v-model="dialog"
               :editedIndex="editedIndex"
               :editedPerson="editedPerson"

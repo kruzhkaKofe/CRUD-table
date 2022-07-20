@@ -1,5 +1,10 @@
 <template>
-  <v-dialog :value="value" @input="updateValue" max-width="600px">
+  <v-dialog
+    :value="value"
+    @input="updateValue"
+    @click:outside="resetForm"
+    max-width="600px"
+  >
     <template v-slot:activator="{ on, attrs }">
       <v-btn color="green darken-2" dark class="mb-2" v-bind="attrs" v-on="on">
         Добавить сотрудника
@@ -9,7 +14,12 @@
       <v-card-title>
         <span class="text-h5">{{ formTitle }}</span>
       </v-card-title>
-      <add-person-form v-model="needEditedPerson" @close="close" @save="save" />
+      <add-person-form
+        ref="personForm"
+        v-model="needEditedPerson"
+        @close="close"
+        @save="save"
+      />
     </v-card>
   </v-dialog>
 </template>
@@ -43,6 +53,10 @@ export default {
   methods: {
     updateValue(value) {
       this.$emit("input", value);
+    },
+
+    resetForm() {
+      this.$refs.personForm.reset();
     },
 
     save() {
