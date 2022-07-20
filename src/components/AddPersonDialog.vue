@@ -22,6 +22,8 @@ export default {
 
   name: "AddPersonDialog",
 
+  emits: ["save", "close"],
+
   props: {
     value: Boolean,
     editedIndex: Number,
@@ -53,5 +55,3 @@ export default {
   },
 };
 </script>
-
-<style lang="sass" scoped></style>

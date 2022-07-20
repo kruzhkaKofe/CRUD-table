@@ -13,38 +13,12 @@
     }"
   >
     <template v-slot:header>
-      <v-toolbar dark color="green darken-3" class="mb-1">
-        <v-text-field
-          v-model="search"
-          clearable
-          flat
-          solo-inverted
-          hide-details
-          prepend-inner-icon="mdi-magnify"
-          label="Поиск"
-        ></v-text-field>
-        <template v-if="$vuetify.breakpoint.mdAndUp">
-          <v-spacer></v-spacer>
-          <v-select
-            v-model="sortBy"
-            flat
-            solo-inverted
-            hide-details
-            :items="keys"
-            prepend-inner-icon="mdi-magnify"
-            label="Сортировать по"
-          ></v-select>
-          <v-spacer></v-spacer>
-          <v-btn-toggle v-model="sortDesc" mandatory>
-            <v-btn large depressed color="green" :value="false">
-              <v-icon>mdi-arrow-up</v-icon>
-            </v-btn>
-            <v-btn large depressed color="green" :value="true">
-              <v-icon>mdi-arrow-down</v-icon></v-btn
-            >
-          </v-btn-toggle>
-        </template>
-      </v-toolbar>
+      <data-iterator-toolbar
+        :search.sync="search"
+        :sortBy.sync="sortBy"
+        :sortDesc.sync="sortDesc"
+        :keys="keys"
+      />
     </template>
 
     <template v-slot:default="props">
@@ -63,8 +37,7 @@
               :editedPerson="editedPerson"
               @close="close"
               @save="save"
-            >
-            </add-person-dialog>
+            />
             <delete-dialog
               v-model="dialogDelete"
               @deletePersonConfirm="deletePersonConfirm"
@@ -89,9 +62,15 @@
 import PersonButtons from "@/components/PersonButtons";
 import DeleteDialog from "@/components/DeleteDialog";
 import AddPersonDialog from "@/components/AddPersonDialog";
+import DataIteratorToolbar from "@/components/DataIteratorToolbar";
 
 export default {
-  components: { PersonButtons, DeleteDialog, AddPersonDialog },
+  components: {
+    PersonButtons,
+    DeleteDialog,
+    AddPersonDialog,
+    DataIteratorToolbar,
+  },
 
   data: () => ({
     persons: [
